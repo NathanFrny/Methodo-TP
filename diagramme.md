@@ -1,5 +1,6 @@
 ```mermaid
 %% Diagrame de séquence
+  sequenceDiagram
 Client->App: Demander un équipement
 App->Bungalow: Vérifier si le produit est disponible
 App->Client: Réponse
