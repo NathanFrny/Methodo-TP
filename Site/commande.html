@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page de Commande</title>
+    <link rel="stylesheet" href="style_commande.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Passer une Commande</h1>
+        
+        <form id="commandeForm">
+            <div class="input-group">
+                <label for="objet">Objet :</label>
+                <select id="objet" name="objet">
+                    <option value="produit1">Produit 1</option>
+                    <option value="produit2">Produit 2</option>
+                    
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="heure">Heure :</label>
+                <input type="time" id="heure" name="heure" required>
+            </div>
+
+            <div class="input-group">
+                <label for="nom">Nom :</label>
+                <input type="text" id="nom" name="nom" required>
+            </div>
+
+            <div class="input-group">
+                <label for="email">Email :</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="input-group">
+                <label for="telephone">Téléphone :</label>
+                <input type="tel" id="telephone" name="telephone" required>
+            </div>
+            
+            <input type="button" value="Valider la Commande">
+            
+            <a href="index.html" class="button">Retour Accueil</a>
+        </form>
+    </div>
+
+</body>
+</html>
