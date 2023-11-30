@@ -1,9 +1,11 @@
 const { Pool } = require('pg');
+const { PASSWORD } = require("../constant.js");
+
 const pool = new Pool({
-    user: 'votre_utilisateur',
+    user: 'nathanfourny',
     host: 'localhost',
-    database: 'votre_base_de_donnees',
-    password: 'votre_mot_de_passe',
+    database: 'methodo',
+    password: PASSWORD,
     port: 5432,
 });
 

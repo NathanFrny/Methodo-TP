@@ -38,7 +38,7 @@
                 <input type="tel" id="telephone" name="telephone" required>
             </div>
             
-            <input type="button" value="Valider la Commande">
+            <input type="submit" value="Valider la Commande">
             
             <a href="index.html" class="button">Retour Accueil</a>
         </form>
@@ -60,48 +60,105 @@
             })
             .catch(error => console.error('Erreur :', error));
 
-        // Function to handle the form submission
-        const handleSubmit = () => {
-            // Récupérer les valeurs du formulaire
-            const objet = document.getElementById('objet').value;
-            const heure = document.getElementById('heure').value;
+        // Ajout d'un gestionnaire d'événements pour le formulaire
+        const commandeForm = document.getElementById('commandeForm');
+        commandeForm.addEventListener('submit', function (event) {
+            event.preventDefault(); // Empêcher le comportement par défaut du formulaire
+
+            // Récupération des valeurs des champs pour la commande
             const nom = document.getElementById('nom').value;
             const email = document.getElementById('email').value;
             const telephone = document.getElementById('telephone').value;
+            const nomEquipement = document.getElementById('objet').value; // Récupération du nom de l'équipement
 
-            // Création de l'objet avec les données à envoyer au serveur
-            const data = {
-                objet,
-                heure,
-                nom,
-                email,
-                telephone
-            };
+            // Récupération de la date actuelle et formatage pour la base de données
+            const heure = document.getElementById('heure').value; // Récupération de l'heure depuis le formulaire
+            const today = new Date(); // Obtenir la date actuelle
+            const dateReservation = new Date(today.toDateString() + ' ' + heure); // Création de la date de réservation
 
-            // Envoi des données au serveur via une requête POST
-            fetch('/api/commander', {
+            // Log pour indiquer que le bouton a été cliqué
+            console.log('Bouton "Valider la Commande" cliqué !');
+
+            // Appel de votre endpoint côté serveur pour ajouter une personne
+            fetch('/api/ajouter_personne', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(data),
+                body: JSON.stringify({ nom, email, telephone }),
             })
-            .then(response => {
-                if (response.ok) {
-                    // Succès - faire quelque chose ici si nécessaire
-                    console.log('Commande passée avec succès !');
-                } else {
-                    throw new Error('Erreur lors de la commande');
-                }
-            })
-            .catch(error => {
-                console.error('Erreur :', error);
-            });
-        };
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Nouvelle personne ajoutée avec succès !');
 
-        // Ajout d'un gestionnaire d'événements pour le bouton de commande
-        const commandeButton = document.querySelector('input[type="button"]');
-        commandeButton.addEventListener('click', handleSubmit);
+                        // Maintenant, appelons l'API pour récupérer l'ID de la personne en fonction de son nom
+                        fetch(`/api/personneByName?nomPersonne=${encodeURIComponent(nom)}`, {
+                            method: 'GET',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                          })
+                          .then(response => response.json())
+                          .then(data => {
+                            let id_personne = data.id_personne;
+
+                                if (!id_personne) {
+                                    id_personne = data;
+                                }
+
+
+                                fetch(`/api/equipementByName?nomEquipement=${encodeURIComponent(nomEquipement)}`, {
+                                    method: 'GET',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    const id_equipement = data.id_equipement; // Récupération de l'ID de l'équipement
+                                
+
+                                    // Maintenant que vous avez l'id de la personne, vous pouvez utiliser cet ID
+                                    // pour ajouter la commande dans la base de données en utilisant une autre API côté serveur
+                                    fetch('/api/add_commande', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                        },
+                                        body: JSON.stringify({
+                                            id_personne,
+                                            id_equipement,
+                                            dateReservation,
+                                        }),
+                                    })
+                                        .then(response => {
+                                            if (response.ok) {
+                                                console.log('Commande ajoutée avec succès !');
+                                                // Réinitialisation des valeurs du formulaire (si nécessaire)
+                                                document.getElementById('nom').value = '';
+                                                document.getElementById('email').value = '';
+                                                document.getElementById('telephone').value = '';
+                                                document.getElementById('objet').value = ''; // Réinitialisation du champ objet
+                                            } else {
+                                                throw new Error('Erreur lors de l\'ajout de la commande');
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error('Erreur :', error);
+                                        });
+                                })
+                                .catch(error => {
+                                    console.error('Erreur lors de la récupération de l\'ID de la personne :', error);
+                                });
+                          });
+                        } else {
+                            throw new Error('Erreur lors de l\'ajout de la personne');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erreur :', error);
+                    });
+            });
       </script>
 
 </body>
