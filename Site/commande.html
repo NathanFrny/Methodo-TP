@@ -10,12 +10,10 @@
     <div class="container">
         <h1>Passer une Commande</h1>
         
-        <form id="commandeForm">
+        <form id="commandeForm" method="POST">
             <div class="input-group">
                 <label for="objet">Objet :</label>
                 <select id="objet" name="objet">
-                    <option value="produit1">Produit 1</option>
-                    <option value="produit2">Produit 2</option>
                     
                 </select>
             </div>
@@ -45,6 +43,66 @@
             <a href="index.html" class="button">Retour Accueil</a>
         </form>
     </div>
+
+    <script>
+        fetch('/api/equipement')
+            .then(response => response.json())
+            .then(data => {
+                const selectObjet = document.getElementById('objet');
+                
+                // Parcourir les données des équipements et créer les options de la combobox
+                data.forEach(equipement => {
+                    const option = document.createElement('option');
+                    option.value = equipement.nom_equipement;
+                    option.textContent = equipement.nom_equipement;
+                    selectObjet.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Erreur :', error));
+
+        // Function to handle the form submission
+        const handleSubmit = () => {
+            // Récupérer les valeurs du formulaire
+            const objet = document.getElementById('objet').value;
+            const heure = document.getElementById('heure').value;
+            const nom = document.getElementById('nom').value;
+            const email = document.getElementById('email').value;
+            const telephone = document.getElementById('telephone').value;
+
+            // Création de l'objet avec les données à envoyer au serveur
+            const data = {
+                objet,
+                heure,
+                nom,
+                email,
+                telephone
+            };
+
+            // Envoi des données au serveur via une requête POST
+            fetch('/api/commander', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Succès - faire quelque chose ici si nécessaire
+                    console.log('Commande passée avec succès !');
+                } else {
+                    throw new Error('Erreur lors de la commande');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur :', error);
+            });
+        };
+
+        // Ajout d'un gestionnaire d'événements pour le bouton de commande
+        const commandeButton = document.querySelector('input[type="button"]');
+        commandeButton.addEventListener('click', handleSubmit);
+      </script>
 
 </body>
 </html>

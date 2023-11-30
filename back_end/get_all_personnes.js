@@ -15,7 +15,7 @@ const client = new Client({
 client.connect();
 
 // Récupération de la liste de tous les équipements
-client.query('SELECT * FROM Equipement', (err, res) => {
+client.query('SELECT * FROM personne', (err, res) => {
   if (err) {
     console.error(err);
   } else {

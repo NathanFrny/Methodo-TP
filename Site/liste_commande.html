@@ -27,6 +27,26 @@
         <a href="index.html" class="button">Retour Accueil</a>
     </div>
 
+    <script>
+        fetch('/api/commandes')
+          .then(response => response.json())
+          .then(data => {
+            const tableauCommandes = document.getElementById('tableauCommandes');
+            
+            // Boucle à travers les données récupérées pour créer les lignes du tableau
+            data.forEach(commande => {
+              const row = tableauCommandes.insertRow();
+              row.innerHTML = `
+                <td>${commande.reservation}</td>
+                <td>${commande.nom_equipement}</td>
+                <td>${commande.nom}</td>
+                <td>${commande.email}</td>
+                <td>${commande.telephone}</td>
+              `;
+            });
+          })
+          .catch(error => console.error('Erreur :', error));
+      </script>
     
 </body>
 </html>
