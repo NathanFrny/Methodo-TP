@@ -4,18 +4,34 @@ body {
     padding: 0;
 }
 
-.container {
-    max-width: 1000px;
-    margin: 50px auto;
-    text-align: center;
-}
-
 h1 {
     color: #333;
 }
 
 p {
     color: #666;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    max-width: 1000px;
+    margin: 50px auto;
+}
+
+#tableauCommandes {
+    border-collapse: collapse;
+    width: 80%;
+    margin: 0 auto; 
+}
+
+#tableauCommandes th, #tableauCommandes td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
 }
 
 .button {
@@ -56,5 +72,47 @@ p {
     color: #fff;
     text-decoration: none;
     border-radius: 5px;
+}
+
+.acceptButton {
+    background-color: #4CAF50; /* Vert */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.deleteButton {
+    background-color: #ca1b1b; /* Vert */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.acceptButton:hover {
+    background-color: #187d1a; /* Une nuance plus foncée de vert au survol */
+}
+
+.button:hover {
+    background-color: #187d1a; /* Une nuance plus foncée de vert au survol */
+}
+
+.deleteButton:hover {
+    background-color: #630a0a;
 }
 

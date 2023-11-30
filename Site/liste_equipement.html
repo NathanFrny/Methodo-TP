@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste Équipements</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Liste Équipement</h1>
+
+        <table id="tableauCommandes">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Type</th>
+                    <th>Nombre</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+        <a href="index.html" class="button">Retour Accueil</a>
+    </div>
+
+    <script>
+        fetch('/api/all_equipement')
+            .then(response => response.json())
+            .then(data => {
+                const tableauEquipement = document.getElementById('tableauCommandes').getElementsByTagName('tbody')[0];
+
+                // Création d'un objet pour stocker les occurrences d'équipement
+                const occurrences = {};
+
+                // Boucle à travers les données pour compter les occurrences
+                data.forEach(equipement => {
+                    if (occurrences[equipement.nom_equipement]) {
+                        occurrences[equipement.nom_equipement]++;
+                    } else {
+                        occurrences[equipement.nom_equipement] = 1;
+                    }
+                });
+
+                // Affichage des équipements et de leur nombre d'occurrences dans le tableau
+                for (const equipement in occurrences) {
+                    const row = tableauEquipement.insertRow();
+                    row.innerHTML = `
+                        <td>${equipement}</td>
+                        <td>${data.find(item => item.nom_equipement === equipement).type_equipement}</td>
+                        <td>${occurrences[equipement]}</td>
+                    `;
+                }
+            })
+            .catch(error => console.error('Erreur :', error));
+    </script>
+</body>
+</html>

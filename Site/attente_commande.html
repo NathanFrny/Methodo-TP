@@ -13,7 +13,7 @@
         <table id="tableauCommandes">
             <thead>
                 <tr>
-                    <th>Heure</th>
+                    <th>Date-Heure</th>
                     <th>Objet</th>
                     <th>Nom</th>
                     <th>Email</th>
@@ -28,24 +28,67 @@
     </div>
 
     <script>
-        fetch('/api/commandes')
-          .then(response => response.json())
-          .then(data => {
-            const tableauCommandes = document.getElementById('tableauCommandes');
-            
-            // Boucle à travers les données récupérées pour créer les lignes du tableau
-            data.forEach(commande => {
-              const row = tableauCommandes.insertRow();
-              row.innerHTML = `
-                <td>${commande.reservation}</td>
-                <td>${commande.nom_equipement}</td>
-                <td>${commande.nom}</td>
-                <td>${commande.email}</td>
-                <td>${commande.telephone}</td>
-              `;
-            });
-          })
-          .catch(error => console.error('Erreur :', error));
+      fetch('/api/waitingCommandes')
+      .then(response => response.json())
+      .then(data => {
+        const tableauCommandes = document.getElementById('tableauCommandes');
+        
+        // Boucle à travers les données récupérées pour créer les lignes du tableau
+        data.forEach(commande => {
+          const row = tableauCommandes.insertRow();
+          row.innerHTML = `
+            <td>${commande.reservation}</td>
+            <td>${commande.nom_equipement}</td>
+            <td>${commande.nom}</td>
+            <td>${commande.email}</td>
+            <td>${commande.telephone}</td>
+            <td><button class="acceptButton">Accepter</button></td>
+          `;
+          
+          // Ajouter un événement au bouton
+          const acceptButton = row.querySelector('.acceptButton');
+          acceptButton.addEventListener('click', async () => {
+            try {
+              // Récupération de l'ID de la personne
+              const responsePersonne = await fetch(`/api/personneByName?nomPersonne=${encodeURIComponent(commande.nom)}`);
+              const dataPersonne = await responsePersonne.json();
+              const id_personne = dataPersonne;
+
+              // Récupération de l'ID de l'équipement
+              const responseEquipement = await fetch(`/api/equipementByName?nomEquipement=${encodeURIComponent(commande.nom_equipement)}`);
+              const dataEquipement = await responseEquipement.json();
+              const id_equipement = dataEquipement.id_equipement;
+
+              // Récupération de l'heure de la commande (à adapter en fonction de votre structure)
+              const heureReservation = commande.reservation; // Adaptation nécessaire
+
+              // Appel à l'endpoint /api/add_possede sur le serveur avec les données nécessaires
+              const responsePossede = await fetch('/api/add_possede', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  id_personne,
+                  id_equipement,
+                  heureReservation,
+                }),
+              });
+
+              if (responsePossede.ok) {
+                console.log('Tuple ajouté avec succès dans la table possede');
+                // Supprimer la ligne du tableau après l'acceptation
+                row.remove();
+              } else {
+                throw new Error('Erreur lors de l\'ajout dans la table possede');
+              }
+            } catch (error) {
+              console.error('Erreur :', error);
+            }
+          });
+        });
+      })
+      .catch(error => console.error('Erreur :', error));
       </script>
 
     

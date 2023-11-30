@@ -1,12 +1,20 @@
 const express = require('express');
 const path = require('path');
 const { getCommandes } = require('./get_all_commandes'); // Importer la fonction getCommandes
+const { getWaitingCommandes } = require('./get_all_waiting_commande'); // Importer la fonction getWaitingCommandes
 const { getEquipement } = require('./get_all_equipements'); // Importer la fonction getEquipement
+const { getAllEquipement } = require('./get_all_equipements'); // Importer la fonction getAllEquipement
 const { insertPersonne } = require('./set_personne.js'); // Importer la fonction insertPersonne
 const { getEquipementByName } = require('./get_equipement_by_name.js'); // Importer la fonction getEquipementByName
 const { getPersonneByName } = require('./get_personne_by_name.js'); // Importer la fonction getPersonneByName
+const { deletePersonne } = require('./delete_personne.js'); // Importer la fonction deletePersonne
+const { deleteCommande } = require('./delete_commande.js'); // Importer la fonction deleteCommande
+const { deletePossede } = require('./delete_possede.js'); // Importer la fonction deletePossede
 const bodyParser = require('body-parser');
-const { addCommande } = require('./add_commande');
+const { addCommande } = require('./add_commande.js');
+const { addPossede } = require('./add_possede.js');
+const { getPossede } = require('./get_all_possede.js');
+
 
 const app = express();
 const PORT = 3000; // Vous pouvez choisir n'importe quel port disponible
@@ -59,10 +67,29 @@ app.get('/api/commandes', (req, res) => {
       });
   });
 
+// Endpoint pour récupérer les données des commandes depuis la base de données
+app.get('/api/possede', (req, res) => {
+  getPossede((possede) => {
+      res.json(possede);
+    });
+});
+
+app.get('/api/waitingCommandes', (req, res) => {
+  getWaitingCommandes((commandes) => {
+      res.json(commandes);
+    });
+});
+
 app.get('/api/equipement', (req, res) => {
     getEquipement((equipement) => {
         res.json(equipement);
     })
+});
+
+app.get('/api/all_equipement', (req, res) => {
+  getAllEquipement((equipement) => {
+      res.json(equipement);
+  })
 });
 
 // Récupérer un équipement en fonction du nom de ce dernier
@@ -115,6 +142,60 @@ app.post('/api/add_commande', async (req, res) => {
 });
 
 
+// Ajouter une entrée dans la table possede
+app.post('/api/add_possede', async (req, res) => {
+  const { id_personne, id_equipement, heureReservation} = req.body;
+
+  try {
+    // Utilisez les données reçues pour ajouter l'entrée dans la table possede via la fonction addPossede
+    await addPossede(id_personne, id_equipement, heureReservation, heureReservation);
+
+    // Envoyer une réponse indiquant que l'entrée a été ajoutée avec succès
+    res.status(200).send('Entrée ajoutée avec succès dans la table possede');
+  } catch (error) {
+    console.error('Erreur :', error);
+    res.status(500).send('Erreur lors de l\'ajout dans la table possede');
+  }
+});
+
+
+// Supprimer une personne
+app.post('/api/delete_personne', (req, res) => {
+  // Récupérer les informations de la requête POST (nom, email, telephone)
+  const { id_personne } = req.body;
+
+  // Appeler la fonction deletePersonne avec les informations de la requête
+  deletePersonne(id_personne);
+
+  // Répondre à la requête avec un statut 200
+  res.status(200).send('Requête de suppression de personne reçue.');
+});
+
+
+// Supprimer une commande
+app.post('/api/delete_commande', (req, res) => {
+  // Récupérer les informations de la requête POST (nom, email, telephone)
+  const { id_personne, id_equipement } = req.body;
+
+  // Appeler la fonction deletePersonne avec les informations de la requête
+  deleteCommande(id_personne, id_equipement);
+
+  // Répondre à la requête avec un statut 200
+  res.status(200).send('Requête de suppression de commande reçue.');
+});
+
+
+// Supprimer une remise
+app.post('/api/delete_possede', (req, res) => {
+  // Récupérer les informations de la requête POST (nom, email, telephone)
+  const { id_personne, id_equipement } = req.body;
+
+  // Appeler la fonction deletePersonne avec les informations de la requête
+  deletePossede(id_personne, id_equipement);
+
+  // Répondre à la requête avec un statut 200
+  res.status(200).send('Requête de suppression de remise reçue.');
+});
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

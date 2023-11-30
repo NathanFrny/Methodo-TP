@@ -32,5 +32,27 @@ client.query(`
   });
 };
 
-module.exports = { getEquipement };
+const getAllEquipement = (callback) => {
+  const client = getClient();
+  client.connect();
+  
+  client.query(`
+      SELECT 
+        *
+      FROM 
+        equipement 
+    `, (err, result) => {
+      if (err) {
+        console.error(err);
+        callback([]);
+      } else {
+        callback(result.rows);
+      }
+  
+      client.end();
+    });
+  };
+
+module.exports = { getAllEquipement, getEquipement };
+
 

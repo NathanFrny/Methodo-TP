@@ -13,7 +13,7 @@
         <table id="tableauCommandes">
             <thead>
                 <tr>
-                    <th>Heure</th>
+                    <th>Date-Heure</th>
                     <th>Objet</th>
                     <th>Nom</th>
                     <th>Email</th>
@@ -27,6 +27,81 @@
         <a href="index.html" class="button">Retour Accueil</a>
     </div>
 
-    
+    <script>
+        fetch('/api/possede')
+            .then(response => response.json())
+            .then(data => {
+                const tableauCommandes = document.getElementById('tableauCommandes').getElementsByTagName('tbody')[0];
+
+                data.forEach(entry => {
+                    const row = tableauCommandes.insertRow();
+                    row.innerHTML = `
+                        <!-- Contenu de chaque ligne du tableau -->
+                        <td>${entry.heure_reservation}</td>
+                        <td>${entry.nom_equipement}</td>
+                        <td>${entry.nom}</td>
+                        <td>${entry.email}</td>
+                        <td>${entry.telephone}</td>
+                        <td><button class="deleteButton">Supprimer</button></td>
+                    `;
+
+                    const deleteButton = row.querySelector('.deleteButton');
+                    deleteButton.addEventListener('click', async () => {
+                        try {
+                            const responsePersonne = await fetch(`/api/personneByName?nomPersonne=${encodeURIComponent(entry.nom)}`);
+                            const dataPersonne = await responsePersonne.json();
+                            const id_personne = dataPersonne;
+
+                            const responseEquipement = await fetch(`/api/equipementByName?nomEquipement=${encodeURIComponent(entry.nom_equipement)}`);
+                            const dataEquipement = await responseEquipement.json();
+                            const id_equipement = dataEquipement.id_equipement;
+
+                            const heureReservation = entry.reservation;
+
+                            const deletePossede = await fetch('/api/delete_possede', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ id_personne, id_equipement })
+                            });
+
+                            // Supprimer les tuples dans les tables commande et possede
+                            const deleteCommande = await fetch('/api/delete_commande', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ id_personne, id_equipement })
+                            });
+
+
+                            if (deleteCommande.ok && deletePossede.ok) {
+                                console.log('Tuples supprimés avec succès !');
+                                const responseDelete = await fetch('/api/delete_personne', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ id_personne })
+                                });
+
+                                if (responseDelete.ok) {
+                                    console.log('Suppression de la personne réussie !');
+                                    // Autres actions après la suppression
+                                } else {
+                                    console.error('Échec de la suppression de la personne');
+                                }
+                            } else {
+                                console.error('Échec de la suppression des tuples');
+                            }
+                        } catch (error) {
+                            console.error('Erreur :', error);
+                        }
+                    });
+                });
+            })
+            .catch(error => console.error('Erreur :', error));
+    </script>
 </body>
 </html>
