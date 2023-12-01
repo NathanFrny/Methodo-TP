@@ -17,7 +17,7 @@ const { getPossede } = require('./get_all_possede.js');
 
 
 const app = express();
-const PORT = 3000; // Vous pouvez choisir n'importe quel port disponible
+const PORT = 3000;
 
 // Définition du dossier contenant vos fichiers HTML, CSS, etc.
 const publicDirectoryPath = path.join(__dirname, '../Site/');
@@ -130,7 +130,6 @@ app.post('/api/add_commande', async (req, res) => {
   // Appeler la fonction addCommande pour ajouter la commande dans la base de données
   try {
       console.log(id_equipement);
-      // Utilisez les données reçues pour ajouter la commande via la fonction addCommande
       await addCommande(id_personne, id_equipement, dateReservation, dateReservation);
 
       // Envoyer une réponse indiquant que la commande a été ajoutée avec succès
@@ -147,7 +146,6 @@ app.post('/api/add_possede', async (req, res) => {
   const { id_personne, id_equipement, heureReservation} = req.body;
 
   try {
-    // Utilisez les données reçues pour ajouter l'entrée dans la table possede via la fonction addPossede
     await addPossede(id_personne, id_equipement, heureReservation, heureReservation);
 
     // Envoyer une réponse indiquant que l'entrée a été ajoutée avec succès
@@ -161,7 +159,6 @@ app.post('/api/add_possede', async (req, res) => {
 
 // Supprimer une personne
 app.post('/api/delete_personne', (req, res) => {
-  // Récupérer les informations de la requête POST (nom, email, telephone)
   const { id_personne } = req.body;
 
   // Appeler la fonction deletePersonne avec les informations de la requête
