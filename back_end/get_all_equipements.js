@@ -16,10 +16,18 @@ const client = getClient();
 client.connect();
 
 client.query(`
-    SELECT 
+    SELECT DISTINCT
       nom_equipement
     FROM 
-      equipement 
+      equipement
+    LEFT JOIN 
+      possede ON equipement.id_equipement = possede.id_equipement
+    LEFT JOIN
+      commander ON equipement.id_equipement = commander.id_equipement
+    WHERE 
+      possede.id_equipement IS NULL
+    AND
+      commander.id_equipement IS NULL
   `, (err, result) => {
     if (err) {
       console.error(err);
